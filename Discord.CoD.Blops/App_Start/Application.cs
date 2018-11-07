@@ -1,0 +1,84 @@
+﻿using Discord.Commands;
+using Discord.WebSocket;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Discord.CoD.Blops.App_Start
+{
+    public class Application
+    {
+        private DiscordSocketClient _client;
+        private CommandService _commands;
+        private IServiceProvider _services;
+
+        private Application() {}
+
+        public static async Task Initialize()
+        {
+            var app = new Application();
+            await app.RunBotAsync();
+        }
+
+        public async Task RunBotAsync()
+        {
+            _client = new DiscordSocketClient();
+            _commands = new CommandService();
+            _services = new ServiceCollection()
+                .AddSingleton(_client)
+                .AddSingleton(_commands)
+                .BuildServiceProvider();
+
+            // TODO: Move this!!!
+            string botToken = "NTA5NTU0MzgwNDE3MDA3NjE2.DsPfUQ.I7P2ro0lQB3zlVzV-znYI8_aSbo";
+
+            _client.Log += Log;
+
+            await RegisterCommandsAsync();
+            await _client.LoginAsync(TokenType.Bot, botToken);
+
+            await _client.StartAsync();
+            await Task.Delay(-1);
+        }
+
+        private Task Log(LogMessage arg)
+        {
+            Console.WriteLine(arg);
+
+            return Task.CompletedTask;
+        }
+
+        public async Task RegisterCommandsAsync()
+        {
+            _client.MessageReceived += HandleCommandAsync;
+
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
+        }
+
+        private async Task HandleCommandAsync(SocketMessage arg)
+        {
+            var message = arg as SocketUserMessage;
+
+            if (message is null || message.Author.IsBot) return;
+
+            int argPos = 0;
+
+            if (message.HasStringPrefix("/blops ", ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos))
+            {
+                var context = new SocketCommandContext(_client, message);
+
+                var res = await _commands.ExecuteAsync(context, argPos, _services);
+
+                if (!res.IsSuccess)
+                {
+                    Console.WriteLine(res.ErrorReason);
+                }
+            }
+        }
+    }
+}
