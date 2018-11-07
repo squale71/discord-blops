@@ -1,9 +1,15 @@
-﻿namespace Discord.CoD.Blops.Models
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace Discord.CoD.Blops.Models
 {
-    public enum Platform
+    public class Platform
     {
-        BattleNet = 1,
-        PSN = 2,
-        XBL = 3
+        [BsonId]
+        public ObjectId _Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string Key { get; set; }
     }
 }

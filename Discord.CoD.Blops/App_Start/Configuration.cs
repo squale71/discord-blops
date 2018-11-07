@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.IO;
 
 namespace Discord.CoD.Blops.App_Start
@@ -15,11 +16,13 @@ namespace Discord.CoD.Blops.App_Start
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
-#if DEBUG
-            builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true);
-#endif
+            var devEnvironmentVariable = Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT");
+            var isDevelopment = string.IsNullOrEmpty(devEnvironmentVariable) || devEnvironmentVariable.ToLower() == "development";
+
+            if (isDevelopment)
+            {
+                builder.AddUserSecrets<AppSecret>();
+            }
 
             _config = builder.Build();
         }
@@ -40,11 +43,6 @@ namespace Discord.CoD.Blops.App_Start
         public string Get(string key)
         {
             return _config[$"{key}"];
-        }
-
-        public string GetConnectionString(string name)
-        {
-            return _config.GetConnectionString(name);
         }
     }
 }

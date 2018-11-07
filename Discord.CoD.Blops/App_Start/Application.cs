@@ -1,12 +1,8 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Discord.CoD.Blops.App_Start
@@ -34,8 +30,7 @@ namespace Discord.CoD.Blops.App_Start
                 .AddSingleton(_commands)
                 .BuildServiceProvider();
 
-            // TODO: Move this!!!
-            string botToken = "NTA5NTU0MzgwNDE3MDA3NjE2.DsPfUQ.I7P2ro0lQB3zlVzV-znYI8_aSbo";
+            string botToken = Configuration.Instance.Get("DiscordApiKey");
 
             _client.Log += Log;
 
