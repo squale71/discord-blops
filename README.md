@@ -10,6 +10,7 @@ Do the following to get going:
 Open Powershell and 'cd' to your project directory:
 
 Run the following commands:
+
 dotnet user-secrets set DiscordApiKey "{your-key}"
 dotnet user-secrets set DatabaseConnectionString "{your-connection-string}"
 
