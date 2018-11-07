@@ -24,7 +24,7 @@ namespace Discord.CoD.Blops
                 .AddSingleton(_commands)
                 .BuildServiceProvider();
 
-            // TODO: Move this.
+            // TODO: Move this!!!
             string botToken = "NTA5NTU0MzgwNDE3MDA3NjE2.DsPfUQ.I7P2ro0lQB3zlVzV-znYI8_aSbo";
 
             _client.Log += Log;
