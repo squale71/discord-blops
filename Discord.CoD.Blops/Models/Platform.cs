@@ -5,8 +5,8 @@ namespace Discord.CoD.Blops.Models
 {
     public class Platform
     {
-        [BsonId]
-        public ObjectId _Id { get; set; }
+        [BsonId] 
+        public ObjectId _Id { get; set; } = ObjectId.GenerateNewId();
 
         public string Name { get; set; }
 

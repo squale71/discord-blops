@@ -1,4 +1,6 @@
-﻿using Discord.Commands;
+﻿using Discord.CoD.Blops.Models;
+using Discord.CoD.Blops.Models.Repositories;
+using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -28,6 +30,8 @@ namespace Discord.CoD.Blops.App_Start
             _services = new ServiceCollection()
                 .AddSingleton(_client)
                 .AddSingleton(_commands)
+                .AddSingleton<IRepository<Platform>, PlatformRepository>()
+                .AddSingleton<IRepository<User>, UserRepository>()
                 .BuildServiceProvider();
 
             string botToken = Configuration.Instance.Get("DiscordApiKey");

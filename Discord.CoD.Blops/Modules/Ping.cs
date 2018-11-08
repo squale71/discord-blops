@@ -1,4 +1,5 @@
 ﻿using Discord.Commands;
+using Discord.WebSocket;
 using System.Threading.Tasks;
 
 namespace Discord.CoD.Blops.Modules
@@ -8,7 +9,10 @@ namespace Discord.CoD.Blops.Modules
         [Command("ping")]
         public async Task PingAsync()
         {
-            await ReplyAsync("Hello World!");
+            var x = (Context.Message.Author);
+
+            
+            await ReplyAsync($"You are user {x.Username} with id {x.Id}");
         }
     }
 }
