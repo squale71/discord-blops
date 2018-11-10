@@ -1,4 +1,5 @@
 ﻿using Discord.CoD.Blops.Api;
+using Discord.CoD.Blops.Helpers;
 using Discord.CoD.Blops.Models;
 using Discord.CoD.Blops.Models.Api;
 using Discord.CoD.Blops.Models.Repositories;
@@ -21,7 +22,7 @@ namespace Discord.CoD.Blops.Modules
             _platformRepository = platformRepository;
         }
 
-        [Command("register platform")]
+        [Command("register-platform")]
         public async Task RegisterPlatformAsync(string platformKey, [Remainder]string platformUserName)
         {
             User currentUser = await _userRepository.GetOneByFilter(x => x.DiscordID, Context.Message.Author.Id);
@@ -42,7 +43,7 @@ namespace Discord.CoD.Blops.Modules
 
                 else
                 {
-                    CoDValidateUser user = null;
+                    CodValidateUser user = null;
 
                     try
                     {
@@ -62,7 +63,10 @@ namespace Discord.CoD.Blops.Modules
                         await ReplyAsync($"No user of that username exists on that platform.");
                     }
 
-                    currentUser.Platforms.Add(new UserPlatform { PlatformKey = platformKey, UserPlatformID = user.Id.ToString(), UserPlatformName = user.Username });
+                    var userPlatform = new UserPlatform { PlatformKey = platformKey, UserPlatformID = user.Id.ToString(), UserPlatformName = user.Username };
+
+                    userPlatform.SyncUserStats();
+                    currentUser.Platforms.Add(userPlatform);
 
                     await _userRepository.Upsert(currentUser);
 

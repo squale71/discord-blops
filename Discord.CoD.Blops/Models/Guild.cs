@@ -1,16 +1,14 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.Collections.Generic;
 
 namespace Discord.CoD.Blops.Models
 {
-    public class User
+    public class Guild
     {
         [BsonId]
         public ObjectId _Id { get; set; } = ObjectId.GenerateNewId();
-        public ulong DiscordID { get; set; }
-        public string DiscordName { get; set; }
-        public List<UserPlatform> Platforms { get; set; } = new List<UserPlatform>();       
         public ulong GuildID { get; set; }
+        public string Name { get; set; }
+        public ulong UpdateChannelID { get; set; }
     }
 }

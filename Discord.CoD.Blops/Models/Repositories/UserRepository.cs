@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -21,7 +22,7 @@ namespace Discord.CoD.Blops.Models.Repositories
             }
         }
 
-        public async Task<IEnumerable<User>> GetManyByFilter(Expression<Func<User, object>> filter, object value)
+        public async Task<IEnumerable<User>> GetManyByFilter<t>(Expression<Func<User, t>> filter, IEnumerable<t> value)
         {
             List<User> users = new List<User>();
 
@@ -31,19 +32,12 @@ namespace Discord.CoD.Blops.Models.Repositories
 
                 User currentPlatform = new User();
 
-                var filterDefinition = new FilterDefinitionBuilder<User>().Eq(filter, value);
-                using (IAsyncCursor<User> cursor = await collection.FindAsync<User>(filterDefinition))
-                {
-                    while (await cursor.MoveNextAsync())
-                    {
-                        currentPlatform = cursor.Current.FirstOrDefault();
+                var filterDefinition = new FilterDefinitionBuilder<User>().In(filter, value);
 
-                        users.Add(currentPlatform);
-                    }
-                }
+                var res = await collection.FindAsync<User>(filterDefinition);
+
+                return res.ToList();
             }
-
-            return users;
         }
 
         public async Task<User> GetOneByFilter(Expression<Func<User, object>> filter, object value)
@@ -76,6 +70,26 @@ namespace Discord.CoD.Blops.Models.Repositories
                 var filterDefinition = new FilterDefinitionBuilder<User>().Eq(x => x._Id, item._Id);
                 var result = await collection.ReplaceOneAsync(filterDefinition, item, new UpdateOptions { IsUpsert = true });
             }
+        }
+
+        public async Task<IEnumerable<User>> GetAll()
+        {
+            List<User> users = new List<User>();
+
+            using (var db = new MongoDbConnection())
+            {
+                var collection = db.Context.GetCollection<User>("users");
+
+                using (IAsyncCursor<User> cursor = await collection.FindAsync(x => true))
+                {
+                    while (await cursor.MoveNextAsync())
+                    {
+                        users.Add(cursor.Current.FirstOrDefault());
+                    }
+                }
+            }
+
+            return users;
         }
     }
 }

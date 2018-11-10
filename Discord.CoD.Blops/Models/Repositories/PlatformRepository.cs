@@ -32,7 +32,7 @@ namespace Discord.CoD.Blops.Models.Repositories
             }
         }
 
-        public async Task<IEnumerable<Platform>> GetManyByFilter(Expression<Func<Platform, object>> filter, object value)
+        public async Task<IEnumerable<Platform>> GetManyByFilter<t>(Expression<Func<Platform, t>> filter, IEnumerable<t> value)
         {
             List<Platform> platforms = new List<Platform>();
 
@@ -42,7 +42,7 @@ namespace Discord.CoD.Blops.Models.Repositories
 
                 Platform currentPlatform = new Platform();
 
-                var filterDefinition = new FilterDefinitionBuilder<Platform>().Eq(filter, value);
+                var filterDefinition = new FilterDefinitionBuilder<Platform>().In(filter, value);
                 using (IAsyncCursor<Platform> cursor = await collection.FindAsync<Platform>(filterDefinition))
                 {
                     while (await cursor.MoveNextAsync())
@@ -76,6 +76,26 @@ namespace Discord.CoD.Blops.Models.Repositories
 
                 return currentPlatform;
             }
+        }
+
+        public async Task<IEnumerable<Platform>> GetAll()
+        {
+            List<Platform> platforms = new List<Platform>();
+
+            using (var db = new MongoDbConnection())
+            {
+                var collection = db.Context.GetCollection<Platform>("platforms");
+
+                using (IAsyncCursor<Platform> cursor = await collection.FindAsync(x => true))
+                {
+                    while (await cursor.MoveNextAsync())
+                    {
+                        platforms.Add(cursor.Current.FirstOrDefault());
+                    }
+                }
+            }
+
+            return platforms;
         }
     }
 }

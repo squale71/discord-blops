@@ -20,7 +20,6 @@ namespace Discord.CoD.Blops.Modules
         [Command("register")]
         public async Task RegisterAsync()
         {
-
             User currentUser = await _repository.GetOneByFilter(x => x.DiscordID, Context.Message.Author.Id);
 
             if (currentUser == null)
@@ -29,6 +28,7 @@ namespace Discord.CoD.Blops.Modules
                 {
                     DiscordID = Context.Message.Author.Id,
                     DiscordName = Context.Message.Author.Username,
+                    GuildID = Context.Guild.Id
                 };
 
                 await _repository.Upsert(currentUser);

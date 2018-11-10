@@ -1,9 +1,11 @@
-﻿using Discord.CoD.Blops.Models;
+﻿using Discord.CoD.Blops.Api;
+using Discord.CoD.Blops.Models;
 using Discord.CoD.Blops.Models.Repositories;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -20,6 +22,7 @@ namespace Discord.CoD.Blops.App_Start
         public static async Task Initialize()
         {
             var app = new Application();
+
             await app.RunBotAsync();
         }
 
@@ -32,6 +35,8 @@ namespace Discord.CoD.Blops.App_Start
                 .AddSingleton(_commands)
                 .AddSingleton<IRepository<Platform>, PlatformRepository>()
                 .AddSingleton<IRepository<User>, UserRepository>()
+                .AddSingleton<IRepository<Guild>, GuildRepository>()
+                .AddSingleton<IRepository<UpdateChannel>, ChannelRepository>()
                 .BuildServiceProvider();
 
             string botToken = Configuration.Instance.Get("DiscordApiKey");
@@ -42,7 +47,10 @@ namespace Discord.CoD.Blops.App_Start
             await _client.LoginAsync(TokenType.Bot, botToken);
 
             await _client.StartAsync();
-            await Task.Delay(-1);
+
+            var poller = new RequestPoller(_client, _services.GetService<IRepository<Guild>>(), _services.GetService<IRepository<User>>());
+
+            await poller.PollUsersAsync();
         }
 
         private Task Log(LogMessage arg)

@@ -19,7 +19,7 @@ namespace Discord.CoD.Blops.App_Start
             var devEnvironmentVariable = Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT");
             var isDevelopment = string.IsNullOrEmpty(devEnvironmentVariable) || devEnvironmentVariable.ToLower() == "development";
 
-            if (isDevelopment)
+            if (true)
             {
                 builder.AddUserSecrets<AppSecret>();
             }

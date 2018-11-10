@@ -15,7 +15,7 @@ namespace Discord.CoD.Blops.Modules
             _repository = repository;
         }
 
-        [Command("add platform")]
+        [Command("add-platform")]
         public async Task AddPlatformAsync(string key, [Remainder]string name)
         {
             var currentPlatform = await _repository.GetOneByFilter(x => x.Key, key);
